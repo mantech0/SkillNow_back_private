@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify
+from flask import Blueprint, jsonify, request
 import csv
 import os
 
@@ -37,3 +37,46 @@ def get_user(user_id):
         return jsonify({'error': 'User not found'}), 404
         
     return jsonify(user)
+
+@users_bp.route('/api/users/<user_id>', methods=['PUT'])
+def update_user(user_id):
+    try:
+        # リクエストボディからデータを取得
+        updated_data = request.get_json()
+        
+        # CSVファイルのパス
+        csv_path = os.path.join(os.path.dirname(__file__), '../../data/users.csv')
+        
+        # 現在のデータを読み込む
+        users = []
+        with open(csv_path, 'r', encoding='utf-8') as file:
+            reader = csv.DictReader(file)
+            users = list(reader)
+        
+        # 対象ユーザーを更新
+        user_updated = False
+        for user in users:
+            if user['id'] == user_id:
+                user.update({
+                    'email': updated_data.get('email', user['email']),
+                    'name': updated_data.get('name', user['name']),
+                    'prefecture': updated_data.get('prefecture', user['prefecture'])
+                })
+                user_updated = True
+                break
+        
+        if not user_updated:
+            return jsonify({'error': 'User not found'}), 404
+        
+        # CSVファイルに書き戻す
+        fieldnames = ['id', 'email', 'name', 'prefecture']
+        with open(csv_path, 'w', encoding='utf-8', newline='') as file:
+            writer = csv.DictWriter(file, fieldnames=fieldnames)
+            writer.writeheader()
+            writer.writerows(users)
+        
+        return jsonify({'message': 'User updated successfully'})
+        
+    except Exception as e:
+        print(f"Error updating user: {e}")
+        return jsonify({'error': 'Failed to update user'}), 500
