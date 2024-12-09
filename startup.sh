@@ -28,8 +28,22 @@ ls -la /home/site/repository/data/
 
 # 環境変数の設定
 export ENVIRONMENT=production
+export WEBSITES_PORT=8000
 export PORT=8000
+
+# デバッグ情報の出力
+echo "Environment variables:"
+echo "PORT: $PORT"
+echo "WEBSITES_PORT: $WEBSITES_PORT"
+echo "WEBSITE_HOSTNAME: $WEBSITE_HOSTNAME"
 
 # Gunicornでアプリケーションを起動
 echo "Starting Gunicorn on port $PORT"
-gunicorn --bind=0.0.0.0:$PORT --timeout 600 --log-level debug --error-logfile - --access-logfile - wsgi:app 
+exec gunicorn --bind=0.0.0.0:$PORT \
+    --timeout 600 \
+    --workers 2 \
+    --threads 2 \
+    --log-level debug \
+    --error-logfile - \
+    --access-logfile - \
+    wsgi:app
