@@ -15,11 +15,19 @@ echo "Checking CSV files..."
 ls -la data/
 
 # 環境変数の設定
-if [ -n "$WEBSITES_PORT" ]; then
-    export PORT=$WEBSITES_PORT
-else
-    export PORT=8000
-fi
+export PORT=8000
+export WEBSITES_PORT=8000
+
+# デバッグ情報
+echo "Current directory: $(pwd)"
+echo "PORT: $PORT"
+echo "WEBSITES_PORT: $WEBSITES_PORT"
 
 # Gunicornでアプリケーションを起動
-exec gunicorn --bind=0.0.0.0:$PORT wsgi:app
+cd /home/site/wwwroot && \
+exec gunicorn \
+    --bind=0.0.0.0:8000 \
+    --timeout 600 \
+    --workers 1 \
+    --log-level debug \
+    wsgi:app
