@@ -13,7 +13,9 @@ CORS(app, resources={
             "https://tech0-gen-8-step3-testapp-node2-26.azurewebsites.net"
         ],
         "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-        "allow_headers": ["Content-Type"]
+        "allow_headers": ["Content-Type"],
+        "expose_headers": ["Content-Type"],
+        "supports_credentials": True
     }
 })
 
