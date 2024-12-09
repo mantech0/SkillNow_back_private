@@ -1,6 +1,7 @@
 from flask import Blueprint, jsonify, request
 import csv
 import os
+import traceback
 from datetime import datetime
 
 projects_bp = Blueprint('projects', __name__)
@@ -10,6 +11,11 @@ def read_projects_from_csv():
     csv_path = os.path.join(os.path.dirname(__file__), '../../data/projects.csv')
     
     try:
+        print(f"Attempting to read CSV from: {csv_path}")
+        print(f"Current working directory: {os.getcwd()}")
+        print(f"Directory contents: {os.listdir(os.path.dirname(csv_path))}")
+        print(f"File exists: {os.path.exists(csv_path)}")
+        
         with open(csv_path, 'r', encoding='utf-8') as file:
             reader = csv.DictReader(file)
             for row in reader:
@@ -28,7 +34,9 @@ def read_projects_from_csv():
                 })
         return projects
     except Exception as e:
-        print(f"Error reading CSV: {e}")
+        print(f"Error reading CSV: {str(e)}")
+        print("Full traceback:")
+        traceback.print_exc()
         return []
 
 @projects_bp.route('/api/projects', methods=['GET'])
