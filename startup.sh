@@ -19,8 +19,12 @@ fi
 cp -f /home/site/repository/data/*.csv data/
 echo "Copied CSV files to data directory"
 
-# CSVファイルの存在確認
+# CSVファイルの存在確認とパーミッション設定
 ls -la data/
+chmod 644 data/*.csv
+echo "Set permissions for CSV files"
+
+# デバッグ情報の出力
 echo "Current directory: $(pwd)"
 echo "Python path: $PYTHONPATH"
 echo "Repository directory contents:"
@@ -28,8 +32,8 @@ ls -la /home/site/repository/data/
 
 # 環境変数の設定
 export ENVIRONMENT=production
-export WEBSITES_PORT=8000
-export PORT=8000
+export PORT="${PORT:-8000}"
+export WEBSITES_PORT="${WEBSITES_PORT:-8000}"
 
 # デバッグ情報の出力
 echo "Environment variables:"
@@ -39,11 +43,16 @@ echo "WEBSITE_HOSTNAME: $WEBSITE_HOSTNAME"
 
 # Gunicornでアプリケーションを起動
 echo "Starting Gunicorn on port $PORT"
-exec gunicorn --bind=0.0.0.0:$PORT \
+cd /home/site/wwwroot && \
+exec gunicorn \
+    --bind=0.0.0.0:$PORT \
     --timeout 600 \
-    --workers 2 \
+    --workers 4 \
     --threads 2 \
-    --log-level debug \
-    --error-logfile - \
-    --access-logfile - \
+    --worker-class=gthread \
+    --worker-tmp-dir=/dev/shm \
+    --log-level=debug \
+    --error-logfile=- \
+    --access-logfile=- \
+    --capture-output \
     wsgi:app
