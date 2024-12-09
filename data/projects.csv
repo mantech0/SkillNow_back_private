@@ -1,0 +1,4 @@
+id,project_name,description,client_name,country,city,business_category,status,start_date,end_date,created_at
+1,Webアプリケーション開発,Next.jsを使用したWebアプリケーション開発,株式会社テクノ,日本,東京,システム開発,open,2024-03-01,2024-06-30,2024-02-09
+2,モバイルアプリ開発,Flutterを使用したクロスプラットフォームアプリ開発,株式会社イノベート,日本,大阪,アプリ開発,in_progress,2024-02-01,2024-05-31,2024-02-08
+3,データ分析基盤構築,BigQueryを使用したデータ分析基盤の構築,テクノロジー株式会社,日本,福岡,データ分析,completed,2024-01-01,2024-01-31,2024-02-07 

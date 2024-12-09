@@ -1,6 +1,7 @@
 from flask import Flask
 from flask_cors import CORS
 from .routes.users import users_bp
+from .routes.projects import projects_bp
 
 app = Flask(__name__)
 
@@ -18,6 +19,7 @@ CORS(app, resources={
 
 # ルートの登録
 app.register_blueprint(users_bp)
+app.register_blueprint(projects_bp)
 
 @app.route('/')
 def index():
