@@ -42,8 +42,11 @@ export FLASK_ENV=production
 export FLASK_DEBUG=0
 
 # Azure Web Appsのポート設定
-export PORT=8000
-export WEBSITES_PORT=8000
+if [ -n "$WEBSITES_PORT" ]; then
+    export PORT=$WEBSITES_PORT
+else
+    export PORT=8000
+fi
 
 # デバッグ情報の出力
 echo "Environment variables:"
@@ -52,16 +55,22 @@ echo "WEBSITES_PORT: $WEBSITES_PORT"
 echo "WEBSITE_HOSTNAME: $WEBSITE_HOSTNAME"
 echo "PYTHONPATH: $PYTHONPATH"
 
+# アプリケーションの起動準備
+echo "Preparing to start application..."
+cd /home/site/wwwroot
+
 # Gunicornでアプリケーションを起動
-echo "Starting Gunicorn..."
+echo "Starting Gunicorn on port $PORT..."
 exec gunicorn \
-    --bind=0.0.0.0:8000 \
+    --bind=0.0.0.0:$PORT \
     --timeout 600 \
     --workers 1 \
-    --threads 2 \
+    --threads 1 \
     --worker-class=sync \
     --log-level=debug \
     --error-logfile=- \
     --access-logfile=- \
     --capture-output \
-    wsgi:app
+    --preload \
+    --reload \
+    application:app

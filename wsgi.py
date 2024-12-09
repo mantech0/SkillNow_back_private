@@ -1,7 +1,6 @@
 import os
 import sys
 import logging
-from logging.handlers import RotatingFileHandler
 
 # ロギングの設定
 logging.basicConfig(
@@ -35,6 +34,19 @@ except Exception as e:
 
 # Gunicornで使用するアプリケーションオブジェクト
 application = app
+
+# デバッグ情報の出力
+logger.info("Environment variables:")
+for key, value in os.environ.items():
+    if key.startswith(('WEBSITE', 'PORT', 'PYTHON', 'FLASK')):
+        logger.info(f"{key}: {value}")
+
+# アプリケーションの設定
+app.config['DEBUG'] = False
+app.config['ENV'] = 'production'
+
+# 起動時のログ出力
+logger.info("Application initialized and ready to serve")
 
 if __name__ == "__main__":
     try:
