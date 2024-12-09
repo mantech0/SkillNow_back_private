@@ -1,19 +1,31 @@
+import os
+import sys
+import logging
 from flask import Flask, jsonify
 from flask_cors import CORS
 from .routes.users import users_bp
 from .routes.projects import projects_bp
-import os
-import logging
 
 # ロギングの設定
+logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
+# アプリケーションのルートディレクトリをPythonパスに追加
+app_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(app_dir)
+logger.info(f"Added to Python path: {app_dir}")
+
+# Flaskアプリケーションの作成
 app = Flask(__name__)
 
-# CORS設定を詳細に指定
+# アプリケーションの設定
+app.config['ENV'] = 'production'
+app.config['DEBUG'] = False
+
+# CORS設定
 CORS(app, resources={
     r"/*": {
-        "origins": "*",  # すべてのオリジンを許可
+        "origins": "*",
         "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
         "allow_headers": ["Content-Type", "Authorization"],
         "expose_headers": ["Content-Type"],
@@ -39,12 +51,12 @@ app.register_blueprint(projects_bp)
 @app.route('/')
 def index():
     try:
-        # 基本的な情報を返す
         return jsonify({
             'message': 'Welcome to SkillNow API',
             'status': 'running',
             'environment': os.environ.get('FLASK_ENV', 'unknown'),
-            'host': os.environ.get('WEBSITE_HOSTNAME', 'unknown')
+            'host': os.environ.get('WEBSITE_HOSTNAME', 'unknown'),
+            'port': os.environ.get('PORT', 'unknown')
         })
     except Exception as e:
         logger.error(f"Error in index route: {str(e)}")
